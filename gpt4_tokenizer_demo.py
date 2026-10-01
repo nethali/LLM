@@ -30,7 +30,7 @@ def main():
     print("--- Step 2: Decoding Token IDs ---")
 
     # Important: .decode() expects a list of token IDs, not a single integer.
-    sample_token_id = 12345
+    sample_token_id = 1234
     decoded_string = tokenizer.decode([sample_token_id])
 
     print(f"Token ID {sample_token_id} decodes to: '{decoded_string}'")
@@ -44,8 +44,8 @@ def main():
     print("--- Step 3: Sensitivity to Spaces and Casing ---")
 
     # Demonstrating how leading spaces alter Token IDs
-    text_no_space = "Michael"
-    text_with_space = " Michael"
+    text_no_space = "John"
+    text_with_space = " John"
 
     ids_no_space = tokenizer.encode(text_no_space)
     ids_with_space = tokenizer.encode(text_with_space)
@@ -54,7 +54,7 @@ def main():
     print(f"'{text_with_space}' -> Token IDs: {ids_with_space}")
 
     # Demonstrating how capitalization fragments text into subwords
-    words_to_test = [" peach", "Peach", "POach"]
+    words_to_test = [" lanka", "Lanka", "LANKA"]
     print("\nCapitalization and Subword Fragmentation:")
     for word in words_to_test:
         encoded_ids = tokenizer.encode(word)
@@ -68,9 +68,9 @@ def main():
     print("--- Step 4: Tokenizing Raw Uncleaned Text ---")
 
     sample_raw_text = """
-    "I stayed silent, and then she touched my hand."
-    
-    Then I felt on my back another soft tentacle...
+    "My MFA seems to have gone on an unexpected vacation." 😅
+
+    Could you help bring it back when you get a chance?
     """
 
     # Direct encoding of raw text without pre-cleaning or manual splitting
@@ -79,8 +79,8 @@ def main():
     print(f"Encoded Token Count: {len(raw_text_tokens)}")
 
     # Print first few token IDs and their exact string representations
-    print("\nToken-by-Token Breakdown (First 10 tokens):")
-    for tid in raw_text_tokens[:10]:
+    print("\nToken-by-Token Breakdown (First 20 tokens):")
+    for tid in raw_text_tokens[:20]:
         token_str = repr(tokenizer.decode([tid]))
         print(f"  ID {tid:>6} -> {token_str}")
     print()
