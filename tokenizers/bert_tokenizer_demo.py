@@ -6,6 +6,7 @@ Hugging Face's `BertTokenizer` (`bert-base-uncased`).
 """
 
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 import numpy as np
 from transformers import BertTokenizer
 
@@ -33,10 +34,7 @@ def main():
     sample_token_id = 1234
     decoded_string = tokenizer.decode([sample_token_id])
 
-    print(f"Token ID {sample_token_id} decodes to: '{decoded_string}'")
-    print(
-        "(Note: BERT WordPiece uses '##' prefixes for continuation subwords!)\n"
-    )
+    print(f"Token ID {sample_token_id} decodes to: '{decoded_string}'\n")
 
     # ==========================================
     # 3. Leading Spaces, Casing, and Special Tokens
@@ -103,10 +101,16 @@ def main():
 
     valid_lengths = np.array(token_lengths)
 
+    min_len = int(np.min(valid_lengths))
+    max_len = int(np.max(valid_lengths))
+
     print(f"Valid Tokens Analyzed: {len(valid_lengths)}")
-    print(f"Min Token Length: {int(np.min(valid_lengths))} chars")
-    print(f"Max Token Length: {int(np.max(valid_lengths))} chars")
+    print(f"Min Token Length: {min_len} chars")
+    print(f"Max Token Length: {max_len} chars")
     print(f"Mean Token Length: {np.mean(valid_lengths):.2f} chars")
+
+    # Define exact integer bin boundaries centered on integer lengths (e.g., 0.5 to 1.5 for len=1)
+    integer_bins = np.arange(min_len - 0.5, max_len + 1.5, 1)
 
     # Plotting the Distribution of Token Lengths
     print("\nGenerating Distribution Plots...")
@@ -114,25 +118,27 @@ def main():
 
     # Plot 1: Linear Scale Histogram
     axes[0].hist(
-        valid_lengths, bins=30, color="skyblue", edgecolor="black", alpha=0.7
+        valid_lengths, bins=integer_bins, color="skyblue", edgecolor="black", alpha=0.7
     )
-    axes[0].set_title("BERT Token Length Distribution (Linear Scale)")
+    axes[0].set_title("Token Length Distribution (Linear Scale)")
     axes[0].set_xlabel("Token Length (Characters)")
     axes[0].set_ylabel("Frequency")
+    axes[0].xaxis.set_major_locator(MaxNLocator(integer=True))
     axes[0].grid(True, linestyle="--", alpha=0.5)
 
     # Plot 2: Logarithmic Scale Histogram
     axes[1].hist(
         valid_lengths,
-        bins=30,
+        bins=integer_bins,
         color="salmon",
         edgecolor="black",
         alpha=0.7,
         log=True,
     )
-    axes[1].set_title("BERT Token Length Distribution (Log Scale)")
+    axes[1].set_title("Token Length Distribution (Log Scale)")
     axes[1].set_xlabel("Token Length (Characters)")
     axes[1].set_ylabel("Frequency (Log Scale)")
+    axes[1].xaxis.set_major_locator(MaxNLocator(integer=True))
     axes[1].grid(True, linestyle="--", alpha=0.5)
 
     plt.tight_layout()
