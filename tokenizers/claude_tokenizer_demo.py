@@ -1,11 +1,10 @@
 """
-Claude Tokenizer Hands-on Demonstration (Colorful Plots)
+Claude Tokenizer Hands-on Demonstration
 --------------------------------------------------
 This script demonstrates how to inspect, encode, decode, and analyze text using 
-Claude's BPE Tokenizer with vibrant, gradient-colored distribution visualizations.
+Claude's BPE Tokenizer via Hugging Face's transformers library.
 """
 
-import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 import numpy as np
@@ -31,19 +30,18 @@ def main():
     # ==========================================
     print("--- Step 2: Decoding Token IDs ---")
 
+    # Important: .decode() expects a list of token IDs
     sample_token_id = 1234
     decoded_string = tokenizer.decode([sample_token_id])
 
-    print(f"Token ID {sample_token_id} decodes to: '{decoded_string}'")
-    print(
-        "(Notice how Claude's BPE handles subword tokens and whitespace!)\n"
-    )
+    print(f"Token ID {sample_token_id} decodes to: '{decoded_string}'\n")
 
     # ==========================================
     # 3. Leading Spaces and Casing Sensitivity
     # ==========================================
     print("--- Step 3: Sensitivity to Spaces and Casing ---")
 
+    # Demonstrating how leading spaces alter Token IDs
     text_no_space = "John"
     text_with_space = " John"
 
@@ -53,6 +51,7 @@ def main():
     print(f"'{text_no_space}' -> Token IDs: {ids_no_space}")
     print(f"'{text_with_space}' -> Token IDs: {ids_with_space}")
 
+    # Demonstrating how capitalization fragments text into subwords
     words_to_test = [" lanka", "Lanka", "LANKA"]
     print("\nCapitalization and Subword Fragmentation:")
     for word in words_to_test:
@@ -72,10 +71,12 @@ def main():
     Could you help bring it back when you get a chance?
     """
 
+    # Direct encoding of raw text without manual splitting
     raw_text_tokens = tokenizer.encode(sample_raw_text)
     print(f"Raw Text Sample:\n{sample_raw_text.strip()}")
     print(f"Encoded Token Count: {len(raw_text_tokens)}")
 
+    # Print first few token IDs and their exact string representations
     print("\nToken-by-Token Breakdown (First 20 tokens):")
     for tid in raw_text_tokens[:20]:
         token_str = repr(tokenizer.decode([tid]))
@@ -107,44 +108,37 @@ def main():
     print(f"Max Token Length: {max_len} chars")
     print(f"Mean Token Length: {np.mean(valid_lengths):.2f} chars")
 
-    # Integer bin boundaries matching exact token byte lengths
+    # Discrete integer bin boundaries for histogram
     integer_bins = np.arange(min_len - 0.5, max_len + 1.5, 1)
 
-    # ==========================================
-    # 6. Vibrant Gradient Plotting
-    # ==========================================
-    print("\nGenerating Vibrant Distribution Plots...")
+    # Plotting the Distribution of Token Lengths
+    print("\nGenerating Distribution Plots...")
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
-    # --- Plot 1: Linear Scale with Viridis Colormap Gradient ---
-    n, bins, patches = axes[0].hist(
-        valid_lengths, bins=integer_bins, edgecolor="black", linewidth=0.5
+    # Plot 1: Linear Scale Histogram
+    axes[0].hist(
+        valid_lengths, bins=integer_bins, color="skyblue", edgecolor="black", alpha=0.7
     )
-
-    # Color each histogram bin based on its token length value
-    col_norm = (bins - min_len) / (max_len - min_len)
-    for patch, color_val in zip(patches, col_norm):
-        patch.set_facecolor(cm.viridis(color_val))
-
-    axes[0].set_title("Claude Token Length Distribution (Linear Scale)")
+    axes[0].set_title("Token Length Distribution (Linear Scale)")
     axes[0].set_xlabel("Token Length (Characters)")
     axes[0].set_ylabel("Frequency")
     axes[0].xaxis.set_major_locator(MaxNLocator(integer=True))
-    axes[0].grid(True, linestyle="--", alpha=0.4)
+    axes[0].grid(True, linestyle="--", alpha=0.5)
 
-    # --- Plot 2: Logarithmic Scale with Plasma Colormap Gradient ---
-    n_log, bins_log, patches_log = axes[1].hist(
-        valid_lengths, bins=integer_bins, edgecolor="black", linewidth=0.5, log=True
+    # Plot 2: Logarithmic Scale Histogram
+    axes[1].hist(
+        valid_lengths,
+        bins=integer_bins,
+        color="salmon",
+        edgecolor="black",
+        alpha=0.7,
+        log=True,
     )
-
-    for patch, color_val in zip(patches_log, col_norm):
-        patch.set_facecolor(cm.plasma(color_val))
-
-    axes[1].set_title("Claude Token Length Distribution (Log Scale)")
+    axes[1].set_title("Token Length Distribution (Log Scale)")
     axes[1].set_xlabel("Token Length (Characters)")
     axes[1].set_ylabel("Frequency (Log Scale)")
     axes[1].xaxis.set_major_locator(MaxNLocator(integer=True))
-    axes[1].grid(True, linestyle="--", alpha=0.4)
+    axes[1].grid(True, linestyle="--", alpha=0.5)
 
     plt.tight_layout()
     plt.show()
